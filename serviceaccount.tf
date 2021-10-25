@@ -17,10 +17,3 @@ resource "google_service_account_iam_binding" "gke_argo_sa_act_as_argo_executor"
    # "serviceAccount:${google_service_account.helloworld-cr-sa.email}",
   ]
 }
-
-# gcloud iam service-accounts add-iam-policy-binding \
-#   --role roles/iam.workloadIdentityUser \
-#    --member "serviceAccount:bowerbird-testing.svc.id.goog[argo/argo]" \
-#    argo-sa@bowerbird-testing.iam.gserviceaccount.com
-
-
