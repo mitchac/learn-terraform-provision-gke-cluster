@@ -1,2 +1,2 @@
-project_id = "REPLACE_ME"
+project_id = "bowerbird-testing"
 region     = "us-central1"

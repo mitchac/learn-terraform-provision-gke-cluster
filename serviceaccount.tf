@@ -16,3 +16,4 @@ resource "google_service_account_iam_binding" "gke_argo_sa_act_as_argo_executor"
    "serviceAccount:${var.project_id}.svc.id.goog[argo/argo]" 
   ]
 }
+
