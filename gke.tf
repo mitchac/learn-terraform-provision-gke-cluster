@@ -16,8 +16,11 @@ variable "gke_num_nodes" {
 # GKE cluster
 resource "google_container_cluster" "primary" {
   name     = "${var.project_id}-gke"
-  location = var.region
-  
+  location = "us-central1-a"
+  workload_identity_config {
+  identity_namespace = "${var.project_id}.svc.id.goog"
+  }
+
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -31,7 +34,7 @@ resource "google_container_cluster" "primary" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${google_container_cluster.primary.name}-node-pool"
-  location   = var.region
+  location   = "us-central1-a"
   cluster    = google_container_cluster.primary.name
   node_count = var.gke_num_nodes
 
@@ -45,11 +48,14 @@ resource "google_container_node_pool" "primary_nodes" {
       env = var.project_id
     }
 
-    # preemptible  = true
+    preemptible  = true
     machine_type = "n1-standard-1"
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
+    }
+    workload_metadata_config {
+      node_metadata = "GKE_METADATA_SERVER"
     }
   }
 }
