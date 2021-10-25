@@ -14,6 +14,5 @@ resource "google_service_account_iam_binding" "gke_argo_sa_act_as_argo_executor"
   role               = "roles/iam.workloadIdentityUser"
   members = [
    "serviceAccount:${var.project_id}.svc.id.goog[argo/argo]" 
-   # "serviceAccount:${google_service_account.helloworld-cr-sa.email}",
   ]
 }
