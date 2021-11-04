@@ -9,7 +9,7 @@ variable "gke_password" {
 }
 
 variable "gke_num_nodes" {
-  default     = 2
+  default     = 1
   description = "number of gke nodes"
 }
 
@@ -49,7 +49,7 @@ resource "google_container_node_pool" "primary_nodes" {
     }
 
     preemptible  = true
-    machine_type = "n1-standard-1"
+    machine_type = "n1-custom-1-3072"
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
@@ -57,6 +57,45 @@ resource "google_container_node_pool" "primary_nodes" {
     workload_metadata_config {
       node_metadata = "GKE_METADATA_SERVER"
     }
+  }
+}
+
+# Separately Managed Node Pool
+resource "google_container_node_pool" "workflow_jobs" {
+  name       = "${google_container_cluster.primary.name}argo-jobs-node-pool"
+  location   = "us-central1-a"
+  cluster    = google_container_cluster.primary.name
+  node_count = var.gke_num_nodes
+
+  node_config {
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+
+    labels = {
+      env = var.project_id
+      purpose = "workflow-jobs"
+    }
+
+    preemptible  = true
+    machine_type = "n1-custom-2-6144"
+    tags         = ["gke-node", "${var.project_id}-gke"]
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+    workload_metadata_config {
+      node_metadata = "GKE_METADATA_SERVER"
+    }
+    taint {
+      key    = "reserved-pool"
+      value  = true
+      effect = "NO_SCHEDULE"
+    }
+  }
+  autoscaling {
+    min_node_count = 0
+    max_node_count = 1
   }
 }
 
