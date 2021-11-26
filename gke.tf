@@ -79,7 +79,7 @@ resource "google_container_node_pool" "workflow_jobs" {
     }
 
     preemptible  = true
-    machine_type = "n1-custom-2-6144"
+    machine_type = "n2d-custom-4-12288"
     tags         = ["gke-node", "${var.project_id}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
